@@ -8,7 +8,7 @@
  * show that they are JavaScript frameworks, Brahma.js is an actual JS file, containing
  * all of this data. This is to make using and debugging the frameworks easy, 
  * as only one reference to one file is needed. Also, it has complex support for Node.js
- * and the Browswer/ other enviornments.
+ * and the Browswer/other enviornments.
 */
 
 (function (global, factory) {
