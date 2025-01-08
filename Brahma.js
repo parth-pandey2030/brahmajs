@@ -286,8 +286,17 @@
         }
         return result;
     };
+    function GaussianHypergeometric(a_values, b_values, c_values, z) {
+        for (let i of a_values) {
+            for (let j of b_values) {
+                for (let k of c_values) {
+                    const function_to_be_iterated = n => ((RisingFactorial(i, n) * RisingFactorial(j, n)) / RisingFactorial(k, n)) * z ** n / Factorial(n);
+                    return Sum(0, Infinity, function_to_be_iterated.toString(), "geometric");
+                }
+            }
+        }
+    };
     
-
     /* If integral is regularly uncomputable */
     function ImpossibleSubstitution(func) {
         // Find impossible part
