@@ -33,9 +33,25 @@
     // Constants
     const e = Math.E;
     const PI = Math.PI;
+    const i = new Complex(0, 1);
 
     // Sum Function
     function Sum(begin, end, func = "x", sumType = "arithmetic") {
+        if (end === Infinity) {
+            end = 1e10;
+        }
+        if (begin === -Infinity) {
+            begin = -1e10;
+        }
+        if (begin > end) {
+            throw new Error("SumError: Begin must be less than or equal to End");
+        }
+        if (typeof begin !== "number" || typeof end !== "number") {
+            throw new Error("SumError: Begin and End must be numbers");    
+        }
+        if (typeof func !== "string") {
+            throw new Error("SumError: Function must be a string (i.e. 'x')");
+        }
         const rule = new Function("x", `return ${func};`);
         let sum = 0;
 
@@ -253,6 +269,7 @@
     // Special Functions
     const exp = Math.exp;
     const erf = z => (2 / Math.sqrt(PI)) * DefiniteIntegral(t => exp(-t * t), 0, z);
+    const erfi = x => -i * erf(x * i);
     const gamma = z => DefiniteIntegral(t => Math.exp(-t) * Math.pow(t, z - 1), 0, Infinity);
     const Factorial = n => gamma(n + 1);
     const PolyLogarithm = (z, s, maxIterations = 1000) => {
@@ -262,11 +279,21 @@
         }
         return sum;
     };
+    const RisingFactorial = (a, n) => {
+        let result = 1;
+        for (let i = 1; i <= n; i++) {
+            result *= (a + i - 1);
+        }
+        return result;
+    };
+    
 
     /* If integral is regularly uncomputable */
     function ImpossibleSubstitution(func) {
         // Find impossible part
+        const funcString = func.toString();
         
+
     }
     
     /* Gradient */
