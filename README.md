@@ -1,5 +1,7 @@
 # Brahmajs
-
+<h1>
+<img id = "logo" src = "assets/Om_symbol.svg"></img>
+</h1>
 Named after the Hindu God of Creation, Brahma.js is a framework for building and describing natural phenomena and creating new things.
 It is designed to be easy to use, as, unlike Node.js or React.js, which use the ".js" suffix to show they are JS libraries, Brahma.js is an actual
 JavaScript file, containing a myriad of data to allow developers to create many wondrous things, as only one reference to one file is needed to use all
@@ -26,3 +28,5 @@ the browser. For example, for the the browser, you can do
     </body>
 </html>
 ```
+
+Here is a list of all the methods that Brahma.js provides:

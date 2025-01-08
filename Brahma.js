@@ -251,12 +251,8 @@
     }
     
     // Special Functions
-    const erf = z => {
-        const PI = Math.PI;
-        const exp = Math.exp;
-        return (2 / Math.sqrt(PI)) * DefiniteIntegral(t => exp(-t * t), 0, z);
-    };
-    
+    const exp = Math.exp;
+    const erf = z => (2 / Math.sqrt(PI)) * DefiniteIntegral(t => exp(-t * t), 0, z);
     const gamma = z => DefiniteIntegral(t => Math.exp(-t) * Math.pow(t, z - 1), 0, Infinity);
     const Factorial = n => gamma(n + 1);
     const PolyLogarithm = (z, s, maxIterations = 1000) => {
@@ -281,7 +277,7 @@
     /* Perceptron and Neural Network Constructors */
     function Perceptron(inputs,weights,threshold=1.5){if(inputs.length!==weights.length){throw new Error("LengthError: Number of inputs must equal number of weights")}const weightedSum=inputs.reduce((sum,input,i)=>sum+input*weights[i],0);return[weightedSum>threshold,weightedSum]}
 function BasicCreateNeuralNet(layerInfo,threshold=1.5){if(!Array.isArray(layerInfo)){throw new Error("Invalid layerInfo format. Must be an array.")}
-const layerNumber=layerInfo[0];const numPerceptrons=layerInfo[1];const layers=layerInfo.map(([layerNumber,numPerceptrons])=>({layerNumber,perceptrons:Array.from({length:numPerceptrons},()=>({weights:initializeWeights(layerInfo[0][1]),threshold,})),}));return{layers,evaluate(inputs){return layers.reduce((outputs,layer)=>{return layer.perceptrons.map(p=>Perceptron(outputs,p.weights,p.threshold)[0])},inputs)},}}
+const layerNumber=layerInfo[0];const numPerceptrons=layerInfo[1];const layers=layerInfo.map(([layerNumber,numPerceptrons])=>({layerNumber,perceptrons:Array.from({length:numPerceptrons},()=>({weights:initializeWeights(layerInfo[1]),threshold,})),}));return{layers,evaluate(inputs){return layers.reduce((outputs,layer)=>{return layer.perceptrons.map(p=>Perceptron(outputs,p.weights,p.threshold)[0])},inputs)},}}
 
     /* Gradient Descent */
     function GradientDescent(func, initialPoint, learningRate = 0.01, iterations = 100) {
@@ -317,5 +313,10 @@ const layerNumber=layerInfo[0];const numPerceptrons=layerInfo[1];const layers=la
         sigmoid,
         ReLU,
         softmax,
+        erf,
+        gamma,
+        Factorial,
+        PolyLogarithm
+        
     };
 });
