@@ -28,5 +28,3 @@ the browser. For example, for the the browser, you can do
     </body>
 </html>
 ```
-
-Here is a list of all the methods that Brahma.js provides:
