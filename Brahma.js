@@ -82,6 +82,62 @@
         return expVector.map(v => v / sumExp);
     };
 
+    // Statistics 
+    const mean = dataset => Sum(0, dataset.length, `dataset[x]`, "arithmetic") / dataset.length;
+    const average = mean;
+    const median = dataset => {
+        const len = dataset.length;
+        if (len % 2 === 0) {
+           return average([dataset[len / 2 - 1] + dataset[len / 2]]); 
+        }
+        return dataset[Math.floor(len / 2)];
+    }
+    const mode = dataset => {
+        const counts = {};
+        let maxCount = 0;
+        let mode;
+        for (const num of dataset) {
+            counts[num] = (counts[num] || 0) + 1;
+            if (counts[num] > maxCount) {
+                maxCount = counts[num];
+                mode = num;
+            }
+        }
+        return mode;
+    }
+    const weightedmean = (dataset, weights) => dataset.length === weights.length ? Sum(1, dataset.length, `dataset[x] * weights[x]`, "arithmetic") : new Error("Dataset and weights must have the same length");
+    const samplestandardDeviation = dataset => sqrt(Sum(1, dataset.length, '(dataset[x]-mean(dataset)) ** 2', 'arithmetic') / (dataset.length - 1));
+    const samplevariance = dataset => samplestandardDeviation(dataset) ** 2;
+    const standardDeviation = dataset => sqrt(Sum(1, dataset.length, '(dataset[x]-mean(dataset)) ** 2', 'arithmetic') / dataset.length);
+    const variance = dataset => standardDeviation(dataset) ** 2;
+    const choose = (n, k) => Factorial(n) / ((Factorial(k) * Factorial(n - k)));
+    const zvalue = (x, dataset) => (x - mean(dataset)) / standardDeviation(dataset);
+    const zscore = zvalue;
+    const correlationcoefficient = (xset, yset) => Sum(0, xset.length, `(xset[x]*yset[x]) - (mean(xset)*mean(yset))`, "arithmetic") / (sqrt(Sum(1, xset.length, 'xset[x] ** 2', "arithmetic") * Sum(1, yset.length, 'yset[x] ** 2', "arithmetic")));
+    const r = correlationcoefficient;
+    const GaussianPDF = 
+    function CDF(x, X, continuousDistribution = false) {
+        if (continuousDistribution) {
+            return DefiniteIntegral(PDF, -Infinity, x);
+        } else {
+            return Sum()
+        }
+    }
+
+    // Statistical Tests
+    function ChiSquare(observed, expected) {
+        if (observed.length !== expected.length) {
+            throw new Error("ChiSquareError: Observed and Expected must be the same length");
+        }
+        let chi = 0;
+        for (let i = 0; i < observed.length; i++) {
+            chi += (observed[i] - expected[i]) ** 2 / expected[i];
+        }
+        return chi;
+    }
+    const OneSampleZ = (sample, population) => (mean(sample) - mean(population)) / (standardDeviation(sample) / sqrt(sample.length));
+    const OneSampleT = (sample, population) => (mean(sample) - mean(population)) / (samplestandardDeviation(sample) / sqrt(sample.length));
+
     // Dual Numbers
     class DualNumber {
         constructor(real, infinitesimal = 0) {
@@ -256,7 +312,7 @@
             try {
                 const result = DefiniteIntegral(x => eval(newFunc), 1, 2); // Replace with actual bounds
                 if (typeof result === "number") {
-                    return `Substitution successful: ${newFunc.toString()}`;
+                    return newFunc.toString();
                 }
             } catch (e) {
                 console.warn(`Error applying substitution for candidate: ${candidate}`);
@@ -267,10 +323,15 @@
     }
     
     // Special Functions
-    const exp = Math.exp;
+    const exp = x => e ** x;
+    const ln = x => Math.log(x);
+    const log = (x, base) => ln(x) / ln(base);
+    const log10 = x => log(x, 10);
+    const sqrt = x => Math.sqrt(x);
     const erf = z => (2 / Math.sqrt(PI)) * DefiniteIntegral(t => exp(-t * t), 0, z);
     const erfi = x => -i * erf(x * i);
     const gamma = z => DefiniteIntegral(t => Math.exp(-t) * Math.pow(t, z - 1), 0, Infinity);
+    const beta = (a, b) => gamma(a) * gamma(b) / gamma(a + b);
     const Factorial = n => gamma(n + 1);
     const PolyLogarithm = (z, s, maxIterations = 1000) => {
         let sum = 0;
@@ -296,14 +357,40 @@
             }
         }
     };
-    
+    function Kummer(a, b, c, z) {
+            const function_to_be_iterated = n => ((RisingFactorial(i, n) * RisingFactorial(j, n)) / RisingFactorial(k, n)) * z ** n / Factorial(n);
+            return Sum(0, Infinity, function_to_be_iterated.toString(), "geometric");
+    };
+    const LogarithmicIntegral = x => DefiniteIntegral(t => 1 / t, 0, x);
+    const OffsetLI = x => LogarithmicIntegral(x) - LogarithmicIntegral(2); 
+    const EllipticIntegral = (x, c, R, P) = DefiniteIntegral(t => R(t, sqrt(P(t))), c, x);
     /* If integral is regularly uncomputable */
     function ImpossibleSubstitution(func) {
-        // Find impossible part
-        const funcString = func.toString();
-        
-
+        // List of special functions to check
+        const specialFunctions = [
+            erf,
+            erfi,
+            gamma, 
+            PolyLogarithm,
+            LogarithmicIntegral,
+            OffsetLI
+        ];
+    
+        // Iterate over special functions to find a match
+        for (let special of specialFunctions) {
+            const { name, func: specialFunc } = special;
+    
+            // Scale factor to check match
+            const scale = func(1) / specialFunc(1);
+            if (!isNaN(scale) && Math.abs(scale - func(1) / specialFunc(1)) < 1e-6) {
+                return x => scale * specialFunc(x);
+            }
+        }
+    
+        // If no match found, return null
+        return null;
     }
+    
     
     /* Gradient */
     function Gradient(func, point) {
