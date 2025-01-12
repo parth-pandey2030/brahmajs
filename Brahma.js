@@ -470,6 +470,7 @@
     const ihat = [1, 0, 0, 0];
     const jhat = [0, 1, 0, 0];
     const khat = [0, 0, 1, 0];
+    const Identity = delta;
 
     // Vector Operations
     const magnitude = v => Math.sqrt(Sum(1, v.length, "v[i] ** 2"));
@@ -633,6 +634,7 @@ const layerNumber=layerInfo[0];const numPerceptrons=layerInfo[1];const layers=la
         ihat,
         jhat,
         khat,
+        Identity,
         magnitude,
         norm,
         dotproduct,
