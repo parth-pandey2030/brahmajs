@@ -78,7 +78,7 @@
     const sigmoidDerivative = x => sigmoid(x) * (1 - sigmoid(x));
     const ReLU = x => Math.max(0, x);
     const softmax = (vector) => {
-        const expVector = vector.map(v => Math.exp(v));
+        const expVector = vector.map(v => exp(v));
         const sumExp = expVector.reduce((a, b) => a + b, 0);
         return expVector.map(v => v / sumExp);
     };
