@@ -34,7 +34,8 @@
     const e = Math.E;
     const PI = Math.PI;
     const i = new Complex(0, 1);
-
+    
+    
     // Sum Function
     function Sum(begin, end, func = "x", sumType = "arithmetic") {
         if (end === Infinity) {
@@ -121,6 +122,18 @@
     const ChiSquarePDF = (x, degreesOfFreedom) => 1 / (2 ** (degreesOfFreedom / 2) * gamma(degreesOfFreedom / 2)) * x ** (degreesOfFreedom / 2 - 1) * exp(-x / 2);
     const BetaPDF = (x, a, b) => (x ** (a - 1) * (1 - x) ** (b - 1)) / (Beta(a, b));
     const CDF = (x, PDF) = DefiniteIntegral(PDF, -Infinity, x);
+    const ChiSquareCriticalValue = (chi, degreesOfFreedom) => {
+        const EPS = 1e-12;
+        let x = chi;
+        let dx = 1000;
+        while (Math.abs(dx) > EPS) {
+            const p = ChiSquarePDF(x, degreesOfFreedom);
+            dx = (p - 0.5) / (p * (x - (degreesOfFreedom - 2) / 2));
+            x -= dx;
+        }
+        return x;
+    }
+    const MeanSquare = dataset => mean(dataset.map(x => x ** 2));
 
     // Statistical Tests
     function ChiSquare(observed, expected) {
@@ -135,7 +148,8 @@
     }
     const OneSampleZ = (sample, population) => (mean(sample) - mean(population)) / (standardDeviation(sample) / sqrt(sample.length));
     const OneSampleT = (sample, population) => (mean(sample) - mean(population)) / (samplestandardDeviation(sample) / sqrt(sample.length));
-
+    const SpearmanRankCorrelationCoefficient = (differences, number_of_observations) => 1 - (6 * Sum(0, differences.length, `differences[x] ** 2`, "arithmetic")) / (number_of_observations * (number_of_observations ** 2 - 1));
+    const SpearmanRank = SpearmanRankCorrelationCoefficient;
     // Dual Numbers
     class DualNumber {
         constructor(real, infinitesimal = 0) {
@@ -228,11 +242,6 @@
         return sum * deltaX;
     }
     
-    // Derivative (Finite Difference Approximation)
-    function derivative(func, x, delta = 1e-5) {
-        return (func(x + delta) - func(x - delta)) / (2 * delta);
-    }
-    
     // Proportionality Check
     function isProportional(func1, func2) {
         try {
@@ -273,7 +282,7 @@
         for (let sub of bodyParts) {
             try {
                 const subFunc = new Function(decomposed.parameters, `return ${sub}`);
-                const diff = derivative(subFunc, 1); // Derivative at x=1 as a test
+                const diff = Derivative(subFunc, 1); // Derivative at x=1 as a test
                 if (isProportional(diff, func)) {
                     matches.push([sub, diff]); // Add to matches if proportional
                 }
@@ -325,7 +334,17 @@
     const ln = x => Math.log(x);
     const log = (x, base) => ln(x) / ln(base);
     const log10 = x => log(x, 10);
+    const binarylog = x => log(x, 2);
     const sqrt = x => Math.sqrt(x);
+    const sin = Math.sin;
+    const cos = Math.cos;
+    const tan = Math.tan;
+    const asin = Math.asin;
+    const acos = Math.acos;
+    const atan = Math.atan;
+    const arcsin = asin;
+    const arccos = acos;
+    const arctan = atan;
     const erf = z => (2 / Math.sqrt(PI)) * DefiniteIntegral(t => exp(-t * t), 0, z);
     const erfi = x => -i * erf(x * i);
     const gamma = z => DefiniteIntegral(t => Math.exp(-t) * Math.pow(t, z - 1), 0, Infinity);
@@ -387,12 +406,54 @@
     
         // If no match found, return null
         return null;
-    }
+    }   
+
+    /* Linear Algebra/Vector Calculus */
+
+    // Unit vectors
+    const ihat = [1, 0, 0, 0];
+    const jhat = [0, 1, 0, 0];
+    const khat = [0, 0, 1, 0];
+
+    // Vector Operations
+    const magnitude = v => Math.sqrt(Sum(1, v.length, "v[i] ** 2"));
+    const norm = magnitude;
+    const dotproduct = (v1, v2) => Sum(1, v1.length, "v1[i] * v2[i]");
+    const angle = (v1, v2) => arccos(dotproduct(v1, v2) / (magnitude(v1) * magnitude(v2)));
+    const crossproduct = (v1, v2) => magnitude(v1) * magnitude(v2) * sin(angle(v1, v2));
+
+
+    // Gradient
+    const Gradient = (func, point) => point.map((_, i) => PartialDerivative(func, point, i, point));
+
+    // Divergence
+    const Divergence = (func, point) => point.map((_, i) => PartialDerivative(func, point, i, point)).reduce((a, b) => a + b);
+
+    // Curl
+    const Curl = (func, point) => [
+        PartialDerivative(func, point, 1, 2) - PartialDerivative(func, point, 2, 1),
+        PartialDerivative(func, point, 2, 0) - PartialDerivative(func, point, 0, 2),
+        PartialDerivative(func, point, 0, 1) - PartialDerivative(func, point, 1, 0),
+    ];
+
+    // Laplacian
+    const Laplacian = (func, point) => Divergence(Gradient(func, point), point);
+
+    // Hessian
+    const HessianEntry = (func, point, i, j) => PartialDerivative(func, point, i, j);
+    const Hessian = (func, point) => {
+        const n = point.length;
+        return [
+            Array.from({length:n},(v,i)=>Array.from({length:n},(v2,j)=>HessianEntry(func,point,i,j)))
+        ];
+    };
     
-    
-    /* Gradient */
-    function Gradient(func, point) {
-        return point.map((_, i) => PartialDerivative(func, point, i, point));
+    // Jacobian
+    const Jacobian = (func, point) => {
+        const n = point.length;
+        return [
+            Array.from({length:n},(v,i)=>PartialDerivative(func,point,i,point))
+        ];
     }
 
     /* Perceptron and Neural Network Constructors */
@@ -419,35 +480,10 @@ const layerNumber=layerInfo[0];const numPerceptrons=layerInfo[1];const layers=la
 
     // Exported API
     return {
+        e,
+        PI,
+        i,
         Sum,
-        DualNumber,
-        epsilon,
-        Limit,
-        Derivative,
-        PartialDerivative,
-        Integral,
-        Gradient,
-        Perceptron,
-        BasicCreateNeuralNet,
-        GradientDescent,
-        initializeWeights,
-        sigmoid,
-        sigmoidDerivative,
-        ReLU,
-        softmax,
-        erf,
-        erfi,
-        gamma,
-        beta,
-        Factorial,
-        PolyLogarithm,
-        RisingFactorial,
-        GaussianHypergeometric,
-        Kummer,
-        LogarithmicIntegral,
-        OffsetLI,
-        EllipticIntegral,
-        ImpossibleSubstitution,
         mean,
         average,
         median,
@@ -463,16 +499,77 @@ const layerNumber=layerInfo[0];const numPerceptrons=layerInfo[1];const layers=la
         choose,
         OneSampleZ,
         OneSampleT,
-        e,
-        PI,
-        i,
-        r,
         GaussianPDF,
         ExpPDF,
         ChiSquarePDF,
         BetaPDF,
         UniformPDF,
         CDF,
-        Poisson
+        Poisson,
+        ChiSquareCriticalValue,
+        ChiSquare,
+        SpearmanRank,
+        SpearmanRankCorrelationCoefficient,
+        DualNumber,
+        epsilon,
+        Limit,
+        Derivative,
+        PartialDerivative,
+        DefiniteIntegral,
+        ApplySub,
+        USub,
+        ImpossibleSubstitution,
+        Gradient,
+        exp,
+        ln,
+        log,
+        log10,
+        binarylog,
+        sqrt,
+        sin,
+        cos,
+        tan,
+        asin,
+        acos,
+        atan,
+        arcsin,
+        arccos,
+        arctan,
+        erf,
+        erfi,
+        gamma,
+        beta,
+        Factorial,
+        PolyLogarithm,
+        RisingFactorial,
+        GaussianHypergeometric,
+        Kummer,
+        LogarithmicIntegral,
+        OffsetLI,
+        EllipticIntegral,
+        ihat,
+        jhat,
+        khat,
+        magnitude,
+        norm,
+        dotproduct,
+        angle,
+        crossproduct,
+        Curl,
+        Divergence,
+        Laplacian,
+        Gradient,
+        HessianEntry,
+        Hessian,
+        Jacobian,
+        Perceptron,
+        BasicCreateNeuralNet,
+        GradientDescent,
+        initializeWeights,
+        sigmoid,
+        sigmoidDerivative,
+        ReLU,
+        softmax,
+        
     };
 })();
