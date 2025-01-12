@@ -33,9 +33,49 @@
     // Constants
     const e = Math.E;
     const PI = Math.PI;
+    class Complex {
+        constructor(real, imag) {
+          this.real = real;
+          this.imag = imag;
+        }
+      
+        add(other) {
+          return new Complex(this.real + other.real, this.imag + other.imag);
+        }
+      
+        subtract(other) {
+          return new Complex(this.real - other.real, this.imag - other.imag);
+        }
+      
+        multiply(other) {
+          const real = this.real * other.real - this.imag * other.imag;
+          const imag = this.real * other.imag + this.imag * other.real;
+          return new Complex(real, imag);
+        }
+      
+        divide(other) {
+          const denominator = other.real * other.real + other.imag * other.imag;
+          const real = (this.real * other.real + this.imag * other.imag) / denominator;
+          const imag = (this.imag * other.real - this.real * other.imag) / denominator;
+          return new Complex(real, imag);
+        }
+      
+        toString() {
+          return `${this.real} + ${this.imag}i`;
+        }
+    }
     const i = new Complex(0, 1);
-    
-    
+    const euler = Sum(1, Infinity, "-ln(x) + 1 / x");
+    const pythagoras = sqrt(2);
+    const golden = (1 + sqrt(5)) / 2;
+    const phi = golden;
+    const goldenratio = phi;
+    const apery = zeta(3);
+    const bernouli = n => (((-1) ** n / 2 + 1) * 2 * Factorial(n) / (2 * PI) ** n) * zeta(n);
+    const gelfond = exp(PI);
+    const ramanajuan = exp(PI * sqrt(163));
+    const hilbert = 2 ** sqrt(2);
+
     // Sum Function
     function Sum(begin, end, func = "x", sumType = "arithmetic") {
         if (end === Infinity) {
@@ -330,7 +370,7 @@
     }
     
     // Special Functions
-    const exp = x => e ** x;
+    const exp = x => e ** x ? x !== NaN : cos(x) + i * sin(x);
     const ln = x => Math.log(x);
     const log = (x, base) => ln(x) / ln(base);
     const log10 = x => log(x, 10);
@@ -339,16 +379,32 @@
     const sin = Math.sin;
     const cos = Math.cos;
     const tan = Math.tan;
+    const sec = 1/ cos;
+    const csc = 1/ sin;
+    const cot = 1/ tan;
     const asin = Math.asin;
     const acos = Math.acos;
     const atan = Math.atan;
     const arcsin = asin;
     const arccos = acos;
     const arctan = atan;
+    const sinh = Math.sinh;
+    const cosh = Math.cosh;
+    const tanh = Math.tanh;
+    const sech = 1 / cosh;
+    const csch = 1 / sinh;
+    const coth = 1 / tanh;
+    const arcsinh = Math.asinh;
+    const arccosh = Math.acosh;
+    const arctanh = Math.atanh;
     const erf = z => (2 / Math.sqrt(PI)) * DefiniteIntegral(t => exp(-t * t), 0, z);
     const erfi = x => -i * erf(x * i);
     const gamma = z => DefiniteIntegral(t => Math.exp(-t) * Math.pow(t, z - 1), 0, Infinity);
     const beta = (a, b) => gamma(a) * gamma(b) / gamma(a + b);
+    const zeta = s => Sum(1, Infinity, `1 / (x ** ${s})`) ? n > 1 : 2 ** s * PI ** (s - 1) * sin(PI * s / 2) * gamma(1 - s) * zeta(1 - s);
+    const Poisson = condition => condition ? 1 : 0;
+    const delta = (i, j) => Poisson(i === j);
+    const KroneckerDelta = delta;
     const Factorial = n => gamma(n + 1);
     const PolyLogarithm = (z, s, maxIterations = 1000) => {
         let sum = 0;
@@ -482,7 +538,18 @@ const layerNumber=layerInfo[0];const numPerceptrons=layerInfo[1];const layers=la
     return {
         e,
         PI,
+        Complex,
         i,
+        euler,
+        pythagoras,
+        golden,
+        phi,
+        goldenratio,
+        apery,
+        bernouli,
+        gelfond,
+        ramanajuan,
+        hilbert,
         Sum,
         mean,
         average,
@@ -529,16 +596,32 @@ const layerNumber=layerInfo[0];const numPerceptrons=layerInfo[1];const layers=la
         sin,
         cos,
         tan,
+        sec,
+        csc,
+        cot,
         asin,
         acos,
         atan,
         arcsin,
         arccos,
         arctan,
+        sinh,
+        cosh,
+        tanh,
+        sech,
+        csch,
+        coth,
+        arcsinh,
+        arccosh,
+        arctanh,
         erf,
         erfi,
         gamma,
         beta,
+        zeta,
+        Poisson,
+        delta,
+        KroneckerDelta,
         Factorial,
         PolyLogarithm,
         RisingFactorial,
