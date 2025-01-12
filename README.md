@@ -14,17 +14,22 @@ Artificial Intelligence and Neural Networks.
 To use Brahma.js' capabilities, all you have to do is have an enviornment to run it, as Brahma.js supports both Node.js and other envs, including 
 the browser. For example, for the the browser, you can do
 ```html
-<!DOCTYPE html>
-<html>
-    <body>
-        <script src = "Brahma.js"></script>
-        <script>
-            // Whatever you desire...
-            // Make sure you do AI.what_you_want, as all methods are
-            // exported in an "AI" object.
-        </script>
-        <p id = "test"></p>
-        <button onclick = "document.getElementById('test').innerHTML = test()">test</button>
-    </body>
+<!doctype html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport"
+          content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>Document</title>
+    <script src="../Brahma.js"></script>
+</head>
+<body>
+    <script>
+        // Whatever you desire...
+        // Make sure you do AI.what_you_want, as all methods are
+        // exported in an "AI" object.
+    </script>
+</body>
 </html>
 ```
