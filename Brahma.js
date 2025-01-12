@@ -115,14 +115,12 @@
     const zscore = zvalue;
     const correlationcoefficient = (xset, yset) => Sum(0, xset.length, `(xset[x]*yset[x]) - (mean(xset)*mean(yset))`, "arithmetic") / (sqrt(Sum(1, xset.length, 'xset[x] ** 2', "arithmetic") * Sum(1, yset.length, 'yset[x] ** 2', "arithmetic")));
     const r = correlationcoefficient;
-    const GaussianPDF = 
-    function CDF(x, X, continuousDistribution = false) {
-        if (continuousDistribution) {
-            return DefiniteIntegral(PDF, -Infinity, x);
-        } else {
-            return Sum()
-        }
-    }
+    const GaussianPDF = (x, dataset) => 1 / (sqrt(2 * Math.PI) * variance(dataset)) * exp(-((x - mean(dataset)) ** 2) / (2 * sigma(dataset) ** 2)); 
+    const ExpPDF = (x, parameter) => 1 - exp(-parameter * x) ? x >= 0 : 0;
+    const UniformPDF = (x, a, b) => 1 / (b - a) ? a <= x && x <= b : 0;
+    const ChiSquarePDF = (x, degreesOfFreedom) => 1 / (2 ** (degreesOfFreedom / 2) * gamma(degreesOfFreedom / 2)) * x ** (degreesOfFreedom / 2 - 1) * exp(-x / 2);
+    const BetaPDF = (x, a, b) => (x ** (a - 1) * (1 - x) ** (b - 1)) / (Beta(a, b));
+    const CDF = (x, PDF) = DefiniteIntegral(PDF, -Infinity, x);
 
     // Statistical Tests
     function ChiSquare(observed, expected) {
@@ -468,5 +466,13 @@ const layerNumber=layerInfo[0];const numPerceptrons=layerInfo[1];const layers=la
         e,
         PI,
         i,
+        r,
+        GaussianPDF,
+        ExpPDF,
+        ChiSquarePDF,
+        BetaPDF,
+        UniformPDF,
+        CDF,
+        Poisson
     };
 })();
