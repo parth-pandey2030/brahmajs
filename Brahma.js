@@ -11,6 +11,8 @@
  * and the Browswer/other enviornments.
 */
 
+const { derivative } = require("mathjs");
+
 (function (global, factory) {
     let env;
     if (typeof module === 'object' && typeof module.exports === 'object') {
@@ -434,6 +436,14 @@
             const function_to_be_iterated = n => ((RisingFactorial(i, n) * RisingFactorial(j, n)) / RisingFactorial(k, n)) * z ** n / Factorial(n);
             return Sum(0, Infinity, function_to_be_iterated.toString(), "geometric");
     };
+    function NewtonsMethod(func, x0, maxIterations = 1000) {
+        let x = x0;
+        for (let i = 0; i < maxIterations; i++) {
+            x = x - func(x) / Derivative(func, x);
+        }
+        return x;
+    }
+    const root = NewtonsMethod;
     const LogarithmicIntegral = x => DefiniteIntegral(t => 1 / t, 0, x);
     const OffsetLI = x => LogarithmicIntegral(x) - LogarithmicIntegral(2); 
     const EllipticIntegral = (x, c, R, P) = DefiniteIntegral(t => R(t, sqrt(P(t))), c, x);
@@ -628,6 +638,8 @@ const layerNumber=layerInfo[0];const numPerceptrons=layerInfo[1];const layers=la
         RisingFactorial,
         GaussianHypergeometric,
         Kummer,
+        NewtonsMethod,
+        root,
         LogarithmicIntegral,
         OffsetLI,
         EllipticIntegral,
