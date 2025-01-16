@@ -179,7 +179,7 @@
     const theta = new GrassmanNumber(0, 1);
     const ε = epsilon;
     const θ = theta;
-    const euler = Sum(1, Infinity, "-ln(x) + 1 / x");   
+    const euler = Sum(1, Infinity, x => -ln(x) + 1 / x);   
     const pythagoras = sqrt(2);
     const golden = (1 + sqrt(5)) / 2;
     const phi = golden;
@@ -815,6 +815,7 @@ const layerNumber=layerInfo[0];const numPerceptrons=layerInfo[1];const layers=la
         LogarithmicIntegral,
         OffsetLI,
         EllipticIntegral,
+        Power,
         BinomialTheorem,
         ihat,
         jhat,
