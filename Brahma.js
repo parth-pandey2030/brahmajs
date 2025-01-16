@@ -11,8 +11,6 @@
  * and the Browswer/other enviornments.
 */
 
-const { derivative } = require("mathjs");
-
 (function (global, factory) {
     let env;
     if (typeof module === 'object' && typeof module.exports === 'object') {
@@ -66,8 +64,97 @@ const { derivative } = require("mathjs");
           return `${this.real} + ${this.imag}i`;
         }
     }
+    class Quaternion {
+        constructor(real, i, j, k) {
+            this.real = real;
+            this.i = i;
+            this.j = j;
+            this.k = k;
+        }
+        toString() {
+            return `${this.real} + ${this.i}i + ${this.j}j + ${this.k}k`;
+        }
+        add(other) {
+            return new Quaternion(this.real + other.real, this.i + other.i, this.j + other.j, this.k + other.k);
+        }
+        subtract(other) {
+            return new Quaternion(this.real - other.real, this.i - other.i, this.j - other.j, this.k - other.k);
+        }
+        multiply(other) {
+            return new Quaternion(
+                this.real * other.real - this.i * other.i - this.j * other.j - this.k * other.k,
+                this.real * other.i + this.i * other.real + this.j * other.k - this.k * other.j,
+                this.real * other.j + this.j * other.real + this.k * other.i - this.i * other.k,
+                this.real * other.k + this.k * other.real + this.i * other.j - this.j * other.i
+            );
+        }
+    }
+    class Octonion {
+        constructor(real, e1, e2, e3, e4, e5, e6, e7) {
+            this.real = real;
+            this.e1 = e1;
+            this.e2 = e2;
+            this.e3 = e3;
+            this.e4 = e4;
+            this.e5 = e5;
+            this.e6 = e6;
+            this.e7 = e7;
+        }
+        toString() {
+            return `${this.real} + ${this.e1}e1 + ${this.e2}e2 + ${this.e3}e3 + ${this.e4}e4 + ${this.e5}e5 + ${this.e6}e6 + ${this.e7}e7`;
+        }
+        add(other) {
+            return new Octonion(this.real + other.real, this.e1 + other.e1, this.e2 + other.e2, this.e3 + other.e3, this.e4 + other.e4, this.e5 + other.e5, this.e6 + other.e6, this.e7 + other.e7);
+        }
+        subtract(other) {
+            return new Octonion(this.real - other.real, this.e1 - other.e1, this.e2 - other.e2, this.e3 - other.e3, this.e4 - other.e4, this.e5 - other.e5, this.e6 - other.e6, this.e7 - other.e7);
+        }
+        multiply(other) {
+            return new Octonion(
+                this.real * other.real - this.e1 * other.e1 - this.e2 * other.e2 - this.e3 * other.e3 - this.e4 * other.e4 - this.e5 * other.e5 - this.e6 * other.e6 - this.e7 * other.e7,  
+                this.real * other.e1 + this.e1 * other.real + this.e2 * other.e7 - this.e3 * other.e6 + this.e4 * other.e5 - this.e5 * other.e4 + this.e6 * other.e3 - this.e7 * other.e2,
+                this.real * other.e2 + this.e2 * other.real + this.e3 * other.e1 - this.e4 * other.e7 + this.e5 * other.e6 - this.e6 * other.e5 + this.e7 * other.e4,
+                this.real * other.e3 + this.e3 * other.real + this.e4 * other.e1 - this.e5 * other.e7 + this.e6 * other.e6 - this.e7 * other.e5,
+                this.real * other.e4 + this.e4 * other.real + this.e5 * other.e1 - this.e6 * other.e7 + this.e7 * other.e6,
+                this.real * other.e5 + this.e5 * other.real + this.e6 * other.e1 - this.e7 * other.e7,
+                this.real * other.e6 + this.e6 * other.real + this.e7 * other.e1,
+                this.real * other.e7 + this.e7 * other.real
+            );
+        }
+    }
+    class DualNumber {
+        constructor(real, infinitesimal = 0) {
+            this.real = real;
+            this.infinitesimal = infinitesimal;
+        }
+
+        add(other) {
+            return new DualNumber(
+                this.real + other.real,
+                this.infinitesimal + other.infinitesimal
+            );
+        }
+
+        multiply(other) {
+            return new DualNumber(
+                this.real * other.real,
+                this.real * other.infinitesimal + this.infinitesimal * other.real
+            );
+        }
+    }
     const i = new Complex(0, 1);
-    const euler = Sum(1, Infinity, "-ln(x) + 1 / x");
+    const j = new Quaternion(0, 0, 1, 0);
+    const k = new Quaternion(0, 0, 0, 1);
+    const e0 = 1;
+    const e1 = i;
+    const e2 = j;
+    const e3 = k;
+    const e4 = new Octonion(0, 0, 0, 0, 1, 0, 0, 0);
+    const e5 = new Octonion(0, 0, 0, 0, 0, 1, 0, 0);
+    const e6 = new Octonion(0, 0, 0, 0, 0, 0, 1, 0);
+    const e7 = new Octonion(0, 0, 0, 0, 0, 0, 0, 1);
+    const epsilon = new DualNumber(0, 1);
+    const euler = Sum(1, Infinity, "-ln(x) + 1 / x");   
     const pythagoras = sqrt(2);
     const golden = (1 + sqrt(5)) / 2;
     const phi = golden;
@@ -77,9 +164,10 @@ const { derivative } = require("mathjs");
     const gelfond = exp(PI);
     const ramanajuan = exp(PI * sqrt(163));
     const hilbert = 2 ** sqrt(2);
-
+    
     // Sum Function
-    function Sum(begin, end, func = "x", sumType = "arithmetic") {
+    function Sum(begin, end, func = x => x, sumType = "arithmetic") {
+        func = func.toString();
         if (end === Infinity) {
             end = 1e10;
         }
@@ -148,15 +236,15 @@ const { derivative } = require("mathjs");
         }
         return mode;
     }
-    const weightedmean = (dataset, weights) => dataset.length === weights.length ? Sum(1, dataset.length, `dataset[x] * weights[x]`, "arithmetic") : new Error("Dataset and weights must have the same length");
-    const samplestandardDeviation = dataset => sqrt(Sum(1, dataset.length, '(dataset[x]-mean(dataset)) ** 2', 'arithmetic') / (dataset.length - 1));
+    const weightedmean = (dataset, weights) => dataset.length === weights.length ? Sum(1, dataset.length, x => dataset[x] * weights[x], "arithmetic") : new Error("Dataset and weights must have the same length");
+    const samplestandardDeviation = dataset => sqrt(Sum(1, dataset.length, x => (dataset[x]-mean(dataset)) ** 2, 'arithmetic') / (dataset.length - 1));
     const samplevariance = dataset => samplestandardDeviation(dataset) ** 2;
-    const standardDeviation = dataset => sqrt(Sum(1, dataset.length, '(dataset[x]-mean(dataset)) ** 2', 'arithmetic') / dataset.length);
+    const standardDeviation = dataset => sqrt(Sum(1, dataset.length, x => (dataset[x]-mean(dataset)) ** 2, 'arithmetic') / dataset.length);
     const variance = dataset => standardDeviation(dataset) ** 2;
     const choose = (n, k) => Factorial(n) / ((Factorial(k) * Factorial(n - k)));
     const zvalue = (x, dataset) => (x - mean(dataset)) / standardDeviation(dataset);
     const zscore = zvalue;
-    const correlationcoefficient = (xset, yset) => Sum(0, xset.length, `(xset[x]*yset[x]) - (mean(xset)*mean(yset))`, "arithmetic") / (sqrt(Sum(1, xset.length, 'xset[x] ** 2', "arithmetic") * Sum(1, yset.length, 'yset[x] ** 2', "arithmetic")));
+    const correlationcoefficient = (xset, yset) => Sum(0, xset.length, x => (xset[x]*yset[x]) - (mean(xset)*mean(yset)), "arithmetic") / (sqrt(Sum(1, xset.length, 'xset[x] ** 2', "arithmetic") * Sum(1, yset.length, 'yset[x] ** 2', "arithmetic")));
     const r = correlationcoefficient;
     const GaussianPDF = (x, dataset) => 1 / (sqrt(2 * Math.PI) * variance(dataset)) * exp(-((x - mean(dataset)) ** 2) / (2 * sigma(dataset) ** 2)); 
     const ExpPDF = (x, parameter) => 1 - exp(-parameter * x) ? x >= 0 : 0;
@@ -192,31 +280,7 @@ const { derivative } = require("mathjs");
     const OneSampleT = (sample, population) => (mean(sample) - mean(population)) / (samplestandardDeviation(sample) / sqrt(sample.length));
     const SpearmanRankCorrelationCoefficient = (differences, number_of_observations) => 1 - (6 * Sum(0, differences.length, `differences[x] ** 2`, "arithmetic")) / (number_of_observations * (number_of_observations ** 2 - 1));
     const SpearmanRank = SpearmanRankCorrelationCoefficient;
-    // Dual Numbers
-    class DualNumber {
-        constructor(real, infinitesimal = 0) {
-            this.real = real;
-            this.infinitesimal = infinitesimal;
-        }
-
-        add(other) {
-            return new DualNumber(
-                this.real + other.real,
-                this.infinitesimal + other.infinitesimal
-            );
-        }
-
-        multiply(other) {
-            return new DualNumber(
-                this.real * other.real,
-                this.real * other.infinitesimal + this.infinitesimal * other.real
-            );
-        }
-    }
-
-    // Pure Infinitesimal
-    const epsilon = new DualNumber(0, 1);
-
+    
     // Limits
     function Limit(func, val, direction = null) {
         const forward = func(new DualNumber(val, epsilon.infinitesimal));
@@ -249,7 +313,21 @@ const { derivative } = require("mathjs");
             throw new Error("DerivativeError: Derivative does not exist at this point.");
         }
     }
-
+    function RepetitiveDerivative(func, x, numDerivatives = 1) {
+        if (numDerivative === 0) {
+            return func(x);
+        }
+        if (numDerivatives < 0) {
+            throw new Error("DerivativeError: Number of derivatives must be non-negative.");
+        }
+        const h = epsilon.infinitesimal;
+        let derivative = func(x);
+        for (let i = 0; i < numDerivatives; i++) {
+            derivative = (func(x + h).real - func(x).real) / h;
+            x = derivative;
+        }
+        return derivative;
+    }        
     function PartialDerivative(func, vars, varIndex, point) {
         const h = epsilon.infinitesimal;
         const newVars = [...vars];
@@ -474,6 +552,37 @@ const { derivative } = require("mathjs");
         return null;
     }   
 
+    // Coordinate/Numerical Transformations
+    const PolarToCartesian = (r, theta) => [r * cos(theta), r * sin(theta)];
+    const CartesianToPolar = (x, y) => [sqrt(x ** 2 + y ** 2), atan(y / x)];
+    const DegreesToRadians = x => x * PI / 180;
+    const RadiansToDegrees = x => x * 180 / PI;
+
+    // Expansions
+    const taylorSeries = (func, x, a) => Sum(0, Infinity, n => RepetitiveDerivative(func, x, a) / Factorial(n) * (x - a) ** n, "arithmetic");
+    const MacLaurinSeries = (func, x) => taylorSeries(func, x, 0);
+
+    function FouirerSeries(func, x, period) {
+        const L = period / 2;
+        const a = n => 1 / L * DefiniteIntegral(m => func(m) * cos(n * PI * m / L), -L, L);
+        const b = n => 1 / L * DefiniteIntegral(m => func(m) * sin(n * PI * m / L), -L, L);
+
+        return a(0) + Sum(1, Infinity, n => a(n) * cos(n * PI * x / L) + b(n) * sin(n * PI * x / L));
+    }
+
+    // Integral Transformations
+    function FourierTransform(func) {
+        return (omega) => DefiniteIntegral(t => func(t) * exp(-i * omega * t), -Infinity, Infinity);
+    }
+    function LaplaceTransform(func) {
+        return (s) => DefiniteIntegral(t => func(t) * exp(-s * t), 0, Infinity);
+    }
+    function InverseFourierTransform(func) {
+        return (omega) => DefiniteIntegral(t => func(t) * exp(i * omega * t), -Infinity, Infinity);
+    }
+    function InverseLaplaceTransform(func) {
+        return (s) => DefiniteIntegral(t => func(t) * exp(s * t), 0, Infinity);
+    }
     /* Linear Algebra/Vector Calculus */
 
     // Unit vectors
@@ -550,7 +659,21 @@ const layerNumber=layerInfo[0];const numPerceptrons=layerInfo[1];const layers=la
         e,
         PI,
         Complex,
+        Quaternion,
+        Octonion,
+        DualNumber,
         i,
+        j,
+        k,
+        e0,
+        e1,
+        e2,
+        e3,
+        e4,
+        e5,
+        e6,
+        e7,
+        epsilon,
         euler,
         pythagoras,
         golden,
@@ -588,8 +711,7 @@ const layerNumber=layerInfo[0];const numPerceptrons=layerInfo[1];const layers=la
         ChiSquare,
         SpearmanRank,
         SpearmanRankCorrelationCoefficient,
-        DualNumber,
-        epsilon,
+        
         Limit,
         Derivative,
         PartialDerivative,
