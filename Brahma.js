@@ -33,6 +33,7 @@
     // Constants
     const e = Math.E;
     const PI = Math.PI;
+    const π = PI;
     class Complex {
         constructor(real, imag) {
           this.real = real;
@@ -122,6 +123,24 @@
             );
         }
     }
+    class GrassmanNumber {
+        constructor(real, dual = 0) {
+            this.real = real;
+            this.dual = dual;
+        }
+        add(other) {
+            return new GrassmanNumber(this.real + other.real, this.dual + other.dual);
+        }
+        multiply(other) {
+            return new GrassmanNumber(
+                this.real * other.real - this.dual * other.dual,
+                this.real * other.dual + this.dual * other.real
+            );
+        }
+        toString() {
+            return `${this.real} + ${this.dual}θ`;
+        }
+    }
     class DualNumber {
         constructor(real, infinitesimal = 0) {
             this.real = real;
@@ -141,6 +160,9 @@
                 this.real * other.infinitesimal + this.infinitesimal * other.real
             );
         }
+        toString() {
+            return `${this.real} + ${this.infinitesimal}ε`;
+        }
     }
     const i = new Complex(0, 1);
     const j = new Quaternion(0, 0, 1, 0);
@@ -154,10 +176,14 @@
     const e6 = new Octonion(0, 0, 0, 0, 0, 0, 1, 0);
     const e7 = new Octonion(0, 0, 0, 0, 0, 0, 0, 1);
     const epsilon = new DualNumber(0, 1);
+    const theta = new GrassmanNumber(0, 1);
+    const ε = epsilon;
+    const θ = theta;
     const euler = Sum(1, Infinity, "-ln(x) + 1 / x");   
     const pythagoras = sqrt(2);
     const golden = (1 + sqrt(5)) / 2;
     const phi = golden;
+    const ϕ = phi;
     const goldenratio = phi;
     const apery = zeta(3);
     const bernouli = n => (((-1) ** n / 2 + 1) * 2 * Factorial(n) / (2 * PI) ** n) * zeta(n);
@@ -525,6 +551,16 @@
     const LogarithmicIntegral = x => DefiniteIntegral(t => 1 / t, 0, x);
     const OffsetLI = x => LogarithmicIntegral(x) - LogarithmicIntegral(2); 
     const EllipticIntegral = (x, c, R, P) = DefiniteIntegral(t => R(t, sqrt(P(t))), c, x);
+    function Power(base, exponent) {
+        if (exponent === 0) return 1;
+        if (exponent === 1) return base;
+        if (exponent instanceof Complex) return Power(base ** exponent.real, exponent.imag ? (exponent.imag % 4 === 1 ? i : exponent.imag % 4 === 3 ? -i : exponent.imag % 4 === 2 ? -1 : 1) : 0);
+        if (exponent instanceof DualNumber) return Power(base, exponent.real);
+        if (exponent instanceof GrassmanNumber) return Power(base, exponent.real + exponent.dual * (1 - exponent.dual));
+        return base * Power(base, exponent - 1);
+    }
+    const BinomialTheorem = (x, y, n) => Sum(0, n, k => choose(n, k) * Power(x, k) * Power(y, (n - k)));
+
     /* If integral is regularly uncomputable */
     function ImpossibleSubstitution(func) {
         // List of special functions to check
@@ -561,7 +597,6 @@
     // Expansions
     const taylorSeries = (func, x, a) => Sum(0, Infinity, n => RepetitiveDerivative(func, x, a) / Factorial(n) * (x - a) ** n, "arithmetic");
     const MacLaurinSeries = (func, x) => taylorSeries(func, x, 0);
-
     function FouirerSeries(func, x, period) {
         const L = period / 2;
         const a = n => 1 / L * DefiniteIntegral(m => func(m) * cos(n * PI * m / L), -L, L);
@@ -658,6 +693,7 @@ const layerNumber=layerInfo[0];const numPerceptrons=layerInfo[1];const layers=la
     return {
         e,
         PI,
+        π,
         Complex,
         Quaternion,
         Octonion,
@@ -674,10 +710,14 @@ const layerNumber=layerInfo[0];const numPerceptrons=layerInfo[1];const layers=la
         e6,
         e7,
         epsilon,
+        theta,
+        ε,
+        θ,
         euler,
         pythagoras,
         golden,
         phi,
+        ϕ,
         goldenratio,
         apery,
         bernouli,
@@ -711,7 +751,6 @@ const layerNumber=layerInfo[0];const numPerceptrons=layerInfo[1];const layers=la
         ChiSquare,
         SpearmanRank,
         SpearmanRankCorrelationCoefficient,
-        
         Limit,
         Derivative,
         PartialDerivative,
@@ -719,6 +758,17 @@ const layerNumber=layerInfo[0];const numPerceptrons=layerInfo[1];const layers=la
         ApplySub,
         USub,
         ImpossibleSubstitution,
+        PolarToCartesian,
+        CartesianToPolar,
+        DegreesToRadians,
+        RadiansToDegrees,
+        taylorSeries,
+        MacLaurinSeries,
+        FouirerSeries,
+        FourierTransform,
+        LaplaceTransform,
+        InverseFourierTransform,
+        InverseLaplaceTransform,
         Gradient,
         exp,
         ln,
@@ -765,6 +815,7 @@ const layerNumber=layerInfo[0];const numPerceptrons=layerInfo[1];const layers=la
         LogarithmicIntegral,
         OffsetLI,
         EllipticIntegral,
+        BinomialTheorem,
         ihat,
         jhat,
         khat,
@@ -789,6 +840,5 @@ const layerNumber=layerInfo[0];const numPerceptrons=layerInfo[1];const layers=la
         sigmoidDerivative,
         ReLU,
         softmax,
-        
     };
 })();
