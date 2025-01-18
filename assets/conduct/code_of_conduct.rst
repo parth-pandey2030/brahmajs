@@ -113,4 +113,4 @@ Incident reporting resolution & Code of Conduct enforcement
 Endnotes
 --------
 
-We are thankful to the groups behind the `Scipy Code of Conduct` https://github.com/scipy/scipy/doc/source/dev/conduct/code_of_conduct.rst, from which we drew content and inspiration
+We are thankful to the groups behind the `Scipy Code of Conduct` https://github.com/scipy/scipy/blob/main/doc/source/dev/conduct/code_of_conduct.rst, from which we drew content and inspiration
