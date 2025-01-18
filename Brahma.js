@@ -164,6 +164,7 @@
             return `${this.real} + ${this.infinitesimal}ε`;
         }
     }
+    const Supernumber = GrassmanNumber;
     const i = new Complex(0, 1);
     const j = new Quaternion(0, 0, 1, 0);
     const k = new Quaternion(0, 0, 0, 1);
@@ -697,6 +698,8 @@ function BasicCreateNeuralNet(layerInfo,threshold=1.5){if(!Array.isArray(layerIn
         Quaternion,
         Octonion,
         DualNumber,
+        GrassmanNumber,
+        Supernumber,
         i,
         j,
         k,
