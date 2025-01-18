@@ -1,1 +1,1 @@
-Brahma.js has a Code Of Conduct, you can see it [here](github.com/parth-pandey2030/brahmajs/assets/conduct/code_of_conduct.rst)
+Brahma.js has a Code Of Conduct, you can see it [here](https://github.com/parth-pandey2030/brahmajs/blob/master/assets/conduct/code_of_conduct.rst)
