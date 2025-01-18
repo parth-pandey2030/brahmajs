@@ -165,6 +165,7 @@
         }
     }
     const Supernumber = GrassmanNumber;
+    const Anticommuting = GrassmanNumber;
     const i = new Complex(0, 1);
     const j = new Quaternion(0, 0, 1, 0);
     const k = new Quaternion(0, 0, 0, 1);
@@ -700,6 +701,7 @@ function BasicCreateNeuralNet(layerInfo,threshold=1.5){if(!Array.isArray(layerIn
         DualNumber,
         GrassmanNumber,
         Supernumber,
+        Anticommuting,
         i,
         j,
         k,
