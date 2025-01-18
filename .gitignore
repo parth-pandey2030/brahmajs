@@ -1,6 +1,5 @@
 # Secret Keys
-ssh.txt
-ssh.txt.pub
+SECRET_KEYS/*
 
 # Other files
 .DS_Store   
