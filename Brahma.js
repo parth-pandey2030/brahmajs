@@ -191,7 +191,7 @@
     const bernouli = n => (((-1) ** n / 2 + 1) * 2 * Factorial(n) / (2 * PI) ** n) * zeta(n);
     const gelfond = exp(PI);
     const ramanajuan = exp(PI * sqrt(163));
-    const hilbert = 2 ** sqrt(2);
+    const hilbert = 2 ** pythagoras;
     
     // Sum Function
     function Sum(begin, end, func = x => x, sumType = "arithmetic") {
@@ -561,6 +561,31 @@
         if (exponent instanceof GrassmanNumber) return Power(base, exponent.real + exponent.dual * (1 - exponent.dual));
         return base * Power(base, exponent - 1);
     }
+    function Tetration(base, number_of_iterations) {
+        for (let i = 0; i < number_of_iterations; i++) {
+            base = Power(base, base);
+        }
+        return base;
+    }
+    function Pentation(base, number_of_iterations) {
+        for (let i = 0; i < number_of_iterations; i++) {
+            base = Tetration(base, Power(base, base));
+        }
+        return base;
+    }
+    function Hexation(base, number_of_iterations) {
+        for (let i = 0; i < number_of_iterations; i++) {
+            base = Pentation(base, Power(base, base));
+        }
+        return base;
+    }
+    function ArrowNotation(base, number_of_arrows, number_of_iterations) {
+        if (number_of_arrows === 1) return Power(base, number_of_iterations);
+        for (let i = 0; i < number_of_iterations; i++) {
+            base = ArrowNotation(base, number_of_arrows - 1, number_of_iterations);
+        }
+        return base;
+    }
     const BinomialTheorem = (x, y, n) => Sum(0, n, k => choose(n, k) * Power(x, k) * Power(y, (n - k)));
 
     /* If integral is regularly uncomputable */
@@ -741,6 +766,7 @@ function BasicCreateNeuralNet(layerInfo,threshold=1.5){if(!Array.isArray(layerIn
         zvalue,
         zscore,
         correlationcoefficient,
+        r,
         choose,
         OneSampleZ,
         OneSampleT,
@@ -820,6 +846,10 @@ function BasicCreateNeuralNet(layerInfo,threshold=1.5){if(!Array.isArray(layerIn
         OffsetLI,
         EllipticIntegral,
         Power,
+        Tetration,
+        Pentation,
+        Hexation,
+        ArrowNotation,
         BinomialTheorem,
         ihat,
         jhat,
