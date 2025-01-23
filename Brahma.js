@@ -621,6 +621,7 @@
         return null;
     }   
 
+    // Find singularities
     function FindInfinite(func) {
         let x = 0;
         let y = 0;
@@ -822,6 +823,7 @@ function BasicCreateNeuralNet(layerInfo,threshold=1.5){if(!Array.isArray(layerIn
         ApplySub,
         USub,
         ImpossibleSubstitution,
+        FindInfinite,
         PolarToCartesian,
         CartesianToPolar,
         DegreesToRadians,
