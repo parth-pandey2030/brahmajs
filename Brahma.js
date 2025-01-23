@@ -177,6 +177,7 @@
     const e5 = new Octonion(0, 0, 0, 0, 0, 1, 0, 0);
     const e6 = new Octonion(0, 0, 0, 0, 0, 0, 1, 0);
     const e7 = new Octonion(0, 0, 0, 0, 0, 0, 0, 1);
+    const iInfinity = i * Infinity;
     const epsilon = new DualNumber(0, 1);
     const theta = new GrassmanNumber(0, 1);
     const ε = epsilon;
@@ -372,7 +373,11 @@
         const limit = 1e10; 
         if (a === -Infinity) a = -limit;
         if (b === Infinity) b = limit;
-        
+        if (a === -iInfinity) a = i * -limit;
+        if (b === iInfinity) b = i * limit;
+        if (a === Infinity) a = limit;
+        if (b === -Infinity) b = -limit;
+
         const deltaX = (b - a) / numIntervals;
         let sum = 0;
     
@@ -616,6 +621,26 @@
         return null;
     }   
 
+    function FindInfinite(func) {
+        let x = 0;
+        let y = 0;
+        let hasSingularity = false;
+
+        while (isFinite(func(x)) || isFinite(func(y))) {
+            x += 1;
+            y -= 1;
+            
+            // Check for singularity by attempting to evaluate func at nearby points
+            if (!isFinite(func(x + 1e-9)) || !isFinite(func(y - 1e-9))) {
+                hasSingularity = true;
+                break;
+            }
+        }
+
+        return hasSingularity ? [x, y] : null;
+    }
+    
+
     // Coordinate/Numerical Transformations
     const PolarToCartesian = (r, theta) => [r * cos(theta), r * sin(theta)];
     const CartesianToPolar = (x, y) => [sqrt(x ** 2 + y ** 2), atan(y / x)];
@@ -644,7 +669,13 @@
         return t => DefiniteIntegral(omega => func(t) * exp(i * omega * t), -Infinity, Infinity);
     }
     function InverseLaplaceTransform(func) {
-        return t => Limit(k => (-1) ** k / Factorial(k) * (k / t) ** (k + 1) * RepetitiveDerivative(func, s, k)(k / t), Infinity);
+        let y = 0
+        const inf = FindInfinite(func);
+        if (inf) {
+            y = inf[0] + 1;
+        }
+
+        return t => 1 / (2 * PI * i) * DefiniteIntegral(s => func(t) * exp(s * t), y - iInfinity, y + iInfinity);
     }
     
     /* Linear Algebra/Vector Calculus */
@@ -740,6 +771,7 @@ function BasicCreateNeuralNet(layerInfo,threshold=1.5){if(!Array.isArray(layerIn
         e5,
         e6,
         e7,
+        iInfinity,
         epsilon,
         theta,
         ε,
