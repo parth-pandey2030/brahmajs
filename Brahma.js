@@ -704,7 +704,7 @@ function BasicCreateNeuralNet(layerInfo,threshold=1.5){if(!Array.isArray(layerIn
     function GradientDescent(func, initialPoint, learningRate = 0.01, iterations = 100) {
         let point = [...initialPoint];
 
-        for (let    i = 0; i < iterations; i++) {
+        for (let i = 0; i < iterations; i++) {
             const nabla = Gradient(func, point);
             point = point.map((x, j) => x  * -nabla[j]);
         }
