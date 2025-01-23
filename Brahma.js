@@ -233,6 +233,7 @@
 
     // Activation Functions
     const sigmoid = x => 1 / (1 + Math.exp(-x));
+    const logisticCurve = sigmoid;
     const sigmoidDerivative = x => sigmoid(x) * (1 - sigmoid(x));
     const ReLU = x => Math.max(0, x);
     const softmax = (vector) => {
@@ -634,17 +635,18 @@
 
     // Integral Transformations
     function FourierTransform(func) {
-        return (omega) => DefiniteIntegral(t => func(t) * exp(-i * omega * t), -Infinity, Infinity);
+        return omega => DefiniteIntegral(t => func(t) * exp(-i * omega * t), -Infinity, Infinity);
     }
     function LaplaceTransform(func) {
-        return (s) => DefiniteIntegral(t => func(t) * exp(-s * t), 0, Infinity);
+        return s => DefiniteIntegral(t => func(t) * exp(-s * t), 0, Infinity);
     }
     function InverseFourierTransform(func) {
-        return (omega) => DefiniteIntegral(t => func(t) * exp(i * omega * t), -Infinity, Infinity);
+        return t => DefiniteIntegral(omega => func(t) * exp(i * omega * t), -Infinity, Infinity);
     }
     function InverseLaplaceTransform(func) {
-        return (s) => DefiniteIntegral(t => func(t) * exp(s * t), 0, Infinity);
+        return t => Limit(k => (-1) ** k / Factorial(k) * (k / t) ** (k + 1) * RepetitiveDerivative(func, s, k)(k / t), Infinity);
     }
+    
     /* Linear Algebra/Vector Calculus */
 
     // Unit vectors
@@ -702,9 +704,9 @@ function BasicCreateNeuralNet(layerInfo,threshold=1.5){if(!Array.isArray(layerIn
     function GradientDescent(func, initialPoint, learningRate = 0.01, iterations = 100) {
         let point = [...initialPoint];
 
-        for (let i = 0; i < iterations; i++) {
+        for (let    i = 0; i < iterations; i++) {
             const nabla = Gradient(func, point);
-            point = point.map((x, j) => x - learningRate * nabla[j]);
+            point = point.map((x, j) => x  * -nabla[j]);
         }
 
         return point;
@@ -872,6 +874,7 @@ function BasicCreateNeuralNet(layerInfo,threshold=1.5){if(!Array.isArray(layerIn
         GradientDescent,
         initializeWeights,
         sigmoid,
+        logisticCurve,
         sigmoidDerivative,
         ReLU,
         softmax,
