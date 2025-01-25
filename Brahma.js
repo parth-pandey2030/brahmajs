@@ -694,7 +694,6 @@
     const angle = (v1, v2) => arccos(dotproduct(v1, v2) / (magnitude(v1) * magnitude(v2)));
     const crossproduct = (v1, v2) => magnitude(v1) * magnitude(v2) * sin(angle(v1, v2));
 
-
     // Gradient
     const Gradient = (func, point) => point.map((_, i) => PartialDerivative(func, point, i, point));
 
