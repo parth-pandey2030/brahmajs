@@ -11,8 +11,8 @@
  * and the Browswer/other enviornments.
 */
 
+let env;
 (function (global, factory) {
-    let env;
     if (typeof module === 'object' && typeof module.exports === 'object') {
         // Node.js environment
         module.exports = factory();
@@ -519,6 +519,21 @@
     const Poisson = condition => condition ? 1 : 0;
     const delta = (i, j) => Poisson(i === j);
     const KroneckerDelta = delta;
+    const LeviCivita = (indices) => {
+      if (indices.length !== indices.length) return 0; // check for duplicate indices
+      const sortedIndices = [...indices].sort((a, b) => a - b);
+      let parity = 1;
+      for (let i = 0; i < indices.length; i++) {
+        const index = indices[i];
+        const sortedIndex = sortedIndices[i];
+        if (index !== sortedIndex) {
+          parity *= -1;
+          const swapCount = indices.slice(i).indexOf(sortedIndex);
+          parity *= Math.pow(-1, swapCount);
+        }
+      }
+      return parity;
+    };
     const Factorial = n => gamma(n + 1);
     const PolyLogarithm = (z, s, maxIterations = 1000) => {
         let sum = 0;
@@ -685,14 +700,41 @@
     const ihat = [1, 0, 0, 0];
     const jhat = [0, 1, 0, 0];
     const khat = [0, 0, 1, 0];
-    const Identity = delta;
-
+    const Identity = size => {
+        let I = [];
+        for (let i = 0, j = 0; i < size && j < size; i++, j++) {
+            I.push(delta(i, j));    
+        }
+        return I;
+    }
+    const ZeroMatrix = (m, n) => {
+        let zero = [];
+        for (let i = 0, j = 0; i < m && j < n; i++, j++) {
+            zero.push(0);
+        }  
+    }
     // Vector Operations
+    const AddMatrix = (v1, v2) => v1.map((_, i) => v1[i] + v2[i]);
+    const SubtractMatrix = (v1, v2) => v1.map((_, i) => v1[i] - v2[i]);
+    const ScaleMatrix = (v, a) => v.map((_, i) => v[i] * a);
+    const MultiplyMatrix = (v1, v2) => v1.map((_, i) => v1[i] * v2[i]);
+    const Transpose = v => v.map((_, i) => v.map((_, j) => v[j][i]));
     const magnitude = v => Math.sqrt(Sum(1, v.length, "v[i] ** 2"));
     const norm = magnitude;
     const dotproduct = (v1, v2) => Sum(1, v1.length, "v1[i] * v2[i]");
     const angle = (v1, v2) => arccos(dotproduct(v1, v2) / (magnitude(v1) * magnitude(v2)));
     const crossproduct = (v1, v2) => magnitude(v1) * magnitude(v2) * sin(angle(v1, v2));
+    const determinate = v => v[0][0] * v[1][1] - v[0][1] * v[1][0];
+    const KroneckerProduct = (A, B, lengthofA, widthofA) => {
+        const p = [];
+        for (let i = 0; i < lengthofA; i++) {
+            for (let j = 0; j < widthofA; j++) {
+                p.push(A[i][j] += B[i][j]);
+            }
+        }
+        return sum;
+    };
+
 
     // Gradient
     const Gradient = (func, point) => point.map((_, i) => PartialDerivative(func, point, i, point));
@@ -727,6 +769,30 @@
         ];
     }
 
+    /* Plotting */
+
+    // Outside Code
+    const HTML = `
+
+    `
+    const JAVACRIPT = `
+    const express = require('express');
+    const path = require('path');
+    const app = express();
+
+    const PORT = 3000;
+
+    // Serve static files (HTML, CSS, JS) from the 'public' folder
+    app.use(express.static(path.join(__dirname, 'public')));
+
+    app.get('/api/message', (req, res) => {
+    res.json({ message: 'Hello from Node.js!' });
+    });
+});
+    `
+
+    /* Artificial Intelligence */
+
     /* Perceptron and Neural Network Constructors */
     function Perceptron(inputs,weights,threshold=1.5){if(inputs.length!==weights.length){throw new Error("LengthError: Number of inputs must equal number of weights")}const weightedSum=inputs.reduce((sum,input,i)=>sum+input*weights[i],0);return[weightedSum>threshold,weightedSum]}function BasicCreateNeuralNet(layerInfo,threshold=1.5){if(!Array.isArray(layerInfo)){throw new Error("Invalid layerInfo format. Must be an array.")}const layers=layerInfo.map(([layerNumber,numPerceptrons])=>({layerNumber,perceptrons:Array.from({length:numPerceptrons},()=>({weights:initializeWeights(layerInfo[1]),threshold,})),}));return{layers,evaluate(inputs){return layers.reduce((outputs,layer)=>{return layer.perceptrons.map(p=>Perceptron(outputs,p.weights,p.threshold)[0])},inputs)},}}
 
@@ -749,6 +815,7 @@
 
     // Exported API
     return {
+        env,
         e,
         PI,
         π,
@@ -869,6 +936,7 @@
         Poisson,
         delta,
         KroneckerDelta,
+        LeviCivita,
         Factorial,
         PolyLogarithm,
         RisingFactorial,
@@ -889,11 +957,19 @@
         jhat,
         khat,
         Identity,
+        ZeroMatrix,
+        AddMatrix,
+        SubtractMatrix,
+        ScaleMatrix,
+        MultiplyMatrix,
+        Transpose,
         magnitude,
         norm,
         dotproduct,
         angle,
         crossproduct,
+        determinate,
+        KroneckerProduct,
         Curl,
         Divergence,
         Laplacian,
