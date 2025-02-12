@@ -11,6 +11,10 @@
  * and the Browswer/other enviornments.
 */
 
+import { exec } from "child_process";
+import { createServer } from "http";
+import { app, BrowserWindow } from "electron";
+
 let env;
 (function (global, factory) {
     if (typeof module === 'object' && typeof module.exports === 'object') {
@@ -770,26 +774,47 @@ let env;
     }
 
     /* Plotting */
+    
+    class PlotFunc2d {
+        constructor(xlim, ylim, func, title = null, loadInNewWindow = true) {
+            this.xlim = xlim;
+            this.ylim = ylim;
+            this.func = func;
+            this.title = title;
+            this.loadInNewWindow = loadInNewWindow;
 
-    // Outside Code
-    const HTML = `
+            if (env === "Node.js") {
+                this.plotNode();
+            } else {
+                this.plotHTML();
+            }
+        }
+        plotNode() {
+            if (this.loadInNewWindow) {
+                let mainWindow;
+                exec("touch .index.html");
+                exec("echo '<html><head><script src=\"../Brahma.js\"></script></head><body><script>const plot = new PlotFunc2d([0,1],[0,1],(x,y)=>x*y);plot.draw();</script></body></html>' >> .index.html");
+                app.whenReady().then(() => {
+                    mainWindow = new BrowserWindow({
+                        width: 800,
+                        height: 600,
+                        webPreferences: {
+                            nodeIntegration: true
+                        }
+                    });
 
-    `
-    const JAVACRIPT = `
-    const express = require('express');
-    const path = require('path');
-    const app = express();
-
-    const PORT = 3000;
-
-    // Serve static files (HTML, CSS, JS) from the 'public' folder
-    app.use(express.static(path.join(__dirname, 'public')));
-
-    app.get('/api/message', (req, res) => {
-    res.json({ message: 'Hello from Node.js!' });
-    });
-});
-    `
+                    mainWindow.loadFile('.index.html');
+                });
+                exec("rm .index.html");
+            }
+            createServer((req, res) => {
+                
+            })
+        }
+        plotHTML() {
+            
+        }
+    }
 
     /* Artificial Intelligence */
 
@@ -977,6 +1002,7 @@ let env;
         HessianEntry,
         Hessian,
         Jacobian,
+        PlotFunc2d,
         Perceptron,
         BasicCreateNeuralNet,
         GradientDescent,
