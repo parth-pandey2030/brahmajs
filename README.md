@@ -1,6 +1,6 @@
 # Brahmajs
 <h1>
-<img id = "logo" src = "assets/Om_symbol.svg"></img>
+<img id = "logo" src = "assets/img/Om_symbol.svg"></img>
 </h1>
 Named after the Hindu God of Creation, Brahma.js is a framework for building and describing natural phenomena and creating new things.
 It is designed to be easy to use, as, unlike Node.js or React.js, which use the ".js" suffix to show they are JS libraries, Brahma.js is an actual
