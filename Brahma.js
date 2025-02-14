@@ -680,13 +680,13 @@ let env;
 
     // Integral Transformations
     function FourierTransform(func) {
-        return omega => DefiniteIntegral(t => func(t) * exp(-i * omega * t), -Infinity, Infinity);
+        return omega => DefiniteIntegral(t => func(t) * exp(-2 * PI * i * omega * t), -Infinity, Infinity);
     }
     function LaplaceTransform(func) {
         return s => DefiniteIntegral(t => func(t) * exp(-s * t), 0, Infinity);
     }
     function InverseFourierTransform(func) {
-        return t => DefiniteIntegral(omega => func(t) * exp(i * omega * t), -Infinity, Infinity);
+        return t => DefiniteIntegral(omega => func(t) * exp(2 * PI * i * omega * t), -Infinity, Infinity);
     }
     function InverseLaplaceTransform(func) {
         let y = 0
@@ -807,8 +807,10 @@ let env;
                 });
                 exec("rm .index.html");
             }
-            createServer((req, res) => {
-                
+            createServer((_, res) => {
+                res.writeHead(200, { 'Content-Type': 'text/html' });
+                res.write('<html><body><script>const plot = new PlotFunc2d([0,1],[0,1],(x,y)=>x*y);plot.draw();</script></body></html>');
+                res.end();
             })
         }
         plotHTML() {
