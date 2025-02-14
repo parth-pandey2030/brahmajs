@@ -1,0 +1,28 @@
+<!-- This file is for working with graphing functions on HTML canvases. -->
+<!-- It is not intended for use outside of this project. -->
+<!-- It Will be eventually deleted. -->
+
+
+<!dOcTyPe html>
+<html lang="en">
+<head>
+    <canvas id="canvas"></canvas>
+</head>
+<body>
+    <script>
+        const canvas = document.getElementById("canvas");
+        const ctx = canvas.getContext("2d");
+        ctx.beginPath();
+
+        for (let x = 0; x <= canvas.width; x += 1) {
+            let y = Math.sin(x / 10) * 50
+
+            if (x === 0) {
+            ctx.moveTo(x, y);
+            } else {
+            ctx.lineTo(x, y);
+            }
+        }
+    </script>
+</body>
+</html>
