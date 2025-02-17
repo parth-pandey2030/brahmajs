@@ -1,23 +1,44 @@
-<!dOcTyPe html>
-<html lang="en">
-<head>
-    <canvas id="canvas"></canvas>
-</head>
-<body>
-    <script>
-        const canvas = document.getElementById("canvas");
-        const ctx = canvas.getContext("2d");
-        ctx.beginPath();
-
-        for (let x = 0; x <= canvas.width; x += 1) {
-            let y = Math.sin(x / 10) * 50
-
-            if (x === 0) {
-            ctx.moveTo(x, y);
-            } else {
-            ctx.lineTo(x, y);
-            }
+<!doctypehtml><html lang=en><meta charset=UTF-8><meta content="width=device-width,initial-scale=1"name=viewport><title>Function Plotter</title><style>canvas{border:1px solid #000}</style><h2>Function Plotter</h2><button onclick=plotFunction()>Plot</button><br><br><canvas height=400 id=plotCanvas width=600></canvas><script>function plotFunction() {
+    const canvas = document.getElementById("plotCanvas");
+    const ctx = canvas.getContext("2d");
+    const funcInput = document.getElementById("functionInput").value;
+    
+    ctx.clearRect(0, 0, canvas.width, canvas.height);
+    
+    // Draw axes
+    ctx.strokeStyle = "black";
+    ctx.beginPath();
+    ctx.moveTo(0, canvas.height / 2);
+    ctx.lineTo(canvas.width, canvas.height / 2);
+    ctx.moveTo(canvas.width / 2, 0);
+    ctx.lineTo(canvas.width / 2, canvas.height);
+    ctx.stroke();
+    
+    // Plot function
+    ctx.strokeStyle = "blue";
+    ctx.beginPath();
+    
+    const scaleX = 40; // Scale for x-axis
+    const scaleY = 40; // Scale for y-axis
+    
+    for (let i = -canvas.width / 2; i < canvas.width / 2; i++) {
+        let x = i / scaleX;
+        let y;
+        try {
+            y = eval(funcInput.replace(/x/g, `(${x})`));
+        } catch (e) {
+            console.error("Invalid function input", e);
+            return;
         }
-    </script>
-</body>
-</html>
+        let canvasX = i + canvas.width / 2;
+        let canvasY = canvas.height / 2 - y * scaleY;
+        if (i === -canvas.width / 2) {
+            ctx.moveTo(canvasX, canvasY);
+        } else {
+            ctx.lineTo(canvasX, canvasY);
+        }
+    }
+    ctx.stroke();
+}
+
+plotFunction(); // Initial plot</script></html>

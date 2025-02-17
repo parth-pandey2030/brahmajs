@@ -776,24 +776,27 @@ let env;
     /* Plotting */
     
     class PlotFunc2d {
-        constructor(xlim, ylim, func, title = null, loadInNewWindow = true) {
-            this.xlim = xlim;
-            this.ylim = ylim;
+        constructor(func, title = null, loadInNewWindow = true, canvasName = "canvas", port = 8080) {
             this.func = func;
             this.title = title;
+            this.port = port;
             this.loadInNewWindow = loadInNewWindow;
-
+            this.canvasName = canvasName;
+            
+            if (env === "Node.js" && this.loadInNewWindow === false && this.port === null) {
+                return "Error: When running in Node.js and loadInNewWindow is set to false, port must be specified";                
+            }
             if (env === "Node.js") {
                 this.plotNode();
-            } else {
+            } else if (env === "Browser/other") {
                 this.plotHTML();
             }
         }
         plotNode() {
             if (this.loadInNewWindow) {
                 let mainWindow;
-                exec("touch .index.html");
-                exec("echo '<html><head><script src=\"../Brahma.js\"></script></head><body><script>const plot = new PlotFunc2d([0,1],[0,1],(x,y)=>x*y);plot.draw();</script></body></html>' >> .index.html");
+                exec(`touch .index.html`);
+                exec(`echo '<html><head><script src=\"../Brahma.js\"></script></head><body><script>const plot = new PlotFunc2d(${this.func}, ${this.title}, false, ${this.canvasName}));</script></body></html>' >> .index.html`);
                 app.whenReady().then(() => {
                     mainWindow = new BrowserWindow({
                         width: 800,
@@ -809,12 +812,81 @@ let env;
             }
             createServer((_, res) => {
                 res.writeHead(200, { 'Content-Type': 'text/html' });
-                res.write('<html><body><script>const plot = new PlotFunc2d([0,1],[0,1],(x,y)=>x*y);plot.draw();</script></body></html>');
+                res.write(`<!doctypehtml><html lang=en><meta charset=UTF-8><meta content="width=device-width,initial-scale=1"name=viewport><title>${this.title}</title><style>canvas{border:1px solid #000}</style><h2>${this.title}</h2><button onclick=plotFunction()>Plot</button><br><br><canvas height=400 id=plotCanvas width=600></canvas><script>function plotFunction() {
+                    const canvas = document.getElementById("plotCanvas");
+                    const ctx = canvas.getContext("2d");
+                    const funcInput = ${this.func};
+                    
+                    ctx.clearRect(0, 0, canvas.width, canvas.height);
+                    
+                    // Draw axes
+                    ctx.strokeStyle = "black";
+                    ctx.beginPath();
+                    ctx.moveTo(0, canvas.height / 2);
+                    ctx.lineTo(canvas.width, canvas.height / 2);
+                    ctx.moveTo(canvas.width / 2, 0);
+                    ctx.lineTo(canvas.width / 2, canvas.height);
+                    ctx.stroke();
+                    
+                    // Plot function
+                    ctx.strokeStyle = "blue";
+                    ctx.beginPath();
+                    
+                    const scaleX = 40; // Scale for x-axis
+                    const scaleY = 40; // Scale for y-axis
+                    
+                    for (let i = -canvas.width / 2; i < canvas.width / 2; i++) {
+                        let x = i / scaleX;
+                        let y;
+                        try {
+                            y = eval(funcInput.replace(/x/g, (${x})));
+                        } catch (e) {
+                            console.error("Invalid function input", e);
+                            return;
+                        }
+                        let canvasX = i + canvas.width / 2;
+                        let canvasY = canvas.height / 2 - y * scaleY;
+                        if (i === -canvas.width / 2) {
+                            ctx.moveTo(canvasX, canvasY);
+                        } else {
+                            ctx.lineTo(canvasX, canvasY);
+                        }
+                    }
+                    ctx.stroke();
+                }
+                
+                plotFunction(); // Initial plot</script></html>');`);
                 res.end();
-            })
+            }).listen(this.port);
         }
         plotHTML() {
-            
+            const ctx = document.getElementById(this.canvasName).getContext("2d");
+            const funcInput = this.func;
+            const scaleX = 40;
+            const scaleY = 40;
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+            ctx.strokeStyle = "black";
+            ctx.beginPath();
+            ctx.moveTo(0, canvas.height / 2);
+            ctx.lineTo(canvas.width, canvas.height / 2);
+            ctx.moveTo(canvas.width / 2, 0);
+            ctx.lineTo(canvas.width / 2, canvas.height);
+            ctx.stroke();
+            ctx.strokeStyle = "blue";
+            ctx.beginPath(); 
+             
+            for (let i = -canvas.width / 2; i < canvas.width / 2; i++) {
+                let x = i / scaleX;
+                let y = eval(funcInput.replace(/x/g, (x)));
+                let canvasX = i + canvas.width / 2;
+                let canvasY = canvas.height / 2 - y * scaleY;
+                if (i === -canvas.width / 2) {
+                    ctx.moveTo(canvasX, canvasY);
+                } else {
+                    ctx.lineTo(canvasX, canvasY);
+                }
+            }
+            ctx.stroke();
         }
     }
 
