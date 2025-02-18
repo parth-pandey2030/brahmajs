@@ -792,11 +792,22 @@ let env;
                 this.plotHTML();
             }
         }
+        hasElectron() {
+            try {
+                require.resolve('electron');
+                return true;
+            } catch (e) {
+                return false;
+            }
+        }
         plotNode() {
             if (this.loadInNewWindow) {
+                if (!this.hasElectron()) {
+                    exec("npm install electron");
+                }
                 let mainWindow;
                 exec(`touch .index.html`);
-                exec(`echo '<html><head><script src=\"../Brahma.js\"></script></head><body><script>const plot = new PlotFunc2d(${this.func}, ${this.title}, false, ${this.canvasName}));</script></body></html>' >> .index.html`);
+                exec(`echo '<html><head><script src=\"../Brahma.js\"></script></head><body><script>const plot = new PlotFunc2d(${this.func}, ${this.title}, false, ${this.canvasName})).plotHTML();</script></body></html>' >> .index.html`);
                 app.whenReady().then(() => {
                     mainWindow = new BrowserWindow({
                         width: 800,
@@ -889,7 +900,7 @@ let env;
             ctx.stroke();
         }
     }
-
+    
     /* Artificial Intelligence */
 
     /* Perceptron and Neural Network Constructors */
