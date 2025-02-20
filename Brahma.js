@@ -13,9 +13,9 @@
 
 import { exec } from "child_process";
 import { createServer } from "http";
-import { app } from "electron";
+
 import pkg from 'electron';
-const { BrowserWindow } = pkg;
+const { app, BrowserWindow } = pkg;
 
 let env;
 (function (global, factory) {
