@@ -593,7 +593,7 @@ let env;
     const root = NewtonsMethod;
     const LogarithmicIntegral = x => DefiniteIntegral(t => 1 / t, 0, x);
     const OffsetLI = x => LogarithmicIntegral(x) - LogarithmicIntegral(2); 
-    const EllipticIntegral = (x, c, R, P) = DefiniteIntegral(t => R(t, sqrt(P(t))), c, x);
+    const EllipticIntegral = (x, c, R, P) => DefiniteIntegral(t => R(t, sqrt(P(t))), c, x);
     function Power(base, exponent) {
         if (exponent === 0) return 1;
         if (exponent === 1) return base;
