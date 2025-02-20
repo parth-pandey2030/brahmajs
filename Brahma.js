@@ -300,7 +300,7 @@ let env;
     const UniformPDF = (x, a, b) => 1 / (b - a) ? a <= x && x <= b : 0;
     const ChiSquarePDF = (x, degreesOfFreedom) => 1 / (2 ** (degreesOfFreedom / 2) * gamma(degreesOfFreedom / 2)) * x ** (degreesOfFreedom / 2 - 1) * exp(-x / 2);
     const BetaPDF = (x, a, b) => (x ** (a - 1) * (1 - x) ** (b - 1)) / (Beta(a, b));
-    const CDF = (x, PDF) = DefiniteIntegral(PDF, -Infinity, x);
+    const CDF = (x, PDF) => DefiniteIntegral(PDF, -Infinity, x);
     const ChiSquareCriticalValue = (chi, degreesOfFreedom) => {
         const EPS = 1e-12;
         let x = chi;
