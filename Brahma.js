@@ -13,7 +13,8 @@
 
 import { exec } from "child_process";
 import { createServer } from "http";
-import { app, BrowserWindow } from "electron";
+import { app } from "electron";
+import { BrowserWindow } from "electron";
 
 let env;
 (function (global, factory) {
