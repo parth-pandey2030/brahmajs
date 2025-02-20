@@ -198,6 +198,12 @@ let env;
     const ramanajuan = exp(PI * sqrt(163));
     const hilbert = 2 ** pythagoras;
     
+    // General Operation Function
+    function Operation(a, b, operation) {
+        operation = eval(operation);
+        return operation(a, b);
+    }
+
     // Sum Function
     function Sum(begin, end, func = x => x, sumType = "arithmetic") {
         if (Limit(func, Infinity) === Infinity) {
@@ -973,6 +979,7 @@ let env;
         gelfond,
         ramanajuan,
         hilbert,
+        Operation,
         Sum,
         mean,
         average,
