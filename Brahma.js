@@ -13,7 +13,7 @@
 
 import { exec } from "child_process";
 import { createServer } from "http";
-import { pkg } from "electron";
+import { app, BrowserWindow } from "electron";
 
 let env;
 (function (global, factory) {
@@ -821,7 +821,6 @@ let env;
                 if (!this.hasElectron()) {
                     exec("npm install electron");
                 }
-                const { app, BrowserWindow } = pkg;
                 let mainWindow;
                 exec(`touch .index.html`);
                 exec(`echo '<html><head><script src=\"../Brahma.js\"></script></head><body><script>const plot = new PlotFunc2d(${this.func}, ${this.title}, false, ${this.canvasName})).plotHTML();</script></body></html>' >> .index.html`);
