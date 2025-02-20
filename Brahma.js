@@ -200,6 +200,15 @@ let env;
     
     // Sum Function
     function Sum(begin, end, func = x => x, sumType = "arithmetic") {
+        if (Limit(func, Infinity) === Infinity) {
+            function f(x) {
+                if (x === 0) {
+                    return func(begin);
+                } 
+                return func(x);
+            }
+            return generalzeta(f, -1); // Zeta Function Regularization (useful for computing divergent sums, for example 1+2+3+4+5+...=-1/12)
+        }
         func = func.toString();
         if (end === Infinity) {
             end = 1e10;
@@ -519,7 +528,8 @@ let env;
     const erfi = x => -i * erf(x * i);
     const gamma = z => DefiniteIntegral(t => Math.exp(-t) * Math.pow(t, z - 1), 0, Infinity);
     const beta = (a, b) => gamma(a) * gamma(b) / gamma(a + b);
-    const zeta = s => Sum(1, Infinity, `1 / (x ** ${s})`) ? n > 1 : 2 ** s * PI ** (s - 1) * sin(PI * s / 2) * gamma(1 - s) * zeta(1 - s);
+    const zeta = s => Sum(1, Infinity, x =>1 / (x ** s)) ? n > 1 : 2 ** s * PI ** (s - 1) * sin(PI * s / 2) * gamma(1 - s) * zeta(1 - s);
+    const generalzeta = (a, s) => 1 / gamma(s) * DefiniteIntegral(t => t ** (s - 1) * Sum(n => exp(-a(n) * t), 0, Infinity), 0, Infinity);
     const Poisson = condition => condition ? 1 : 0;
     const delta = (i, j) => Poisson(i === j);
     const KroneckerDelta = delta;
@@ -1043,6 +1053,7 @@ let env;
         gamma,
         beta,
         zeta,
+        generalzeta,
         Poisson,
         delta,
         KroneckerDelta,
